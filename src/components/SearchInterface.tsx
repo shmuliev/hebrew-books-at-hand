@@ -72,30 +72,39 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
     <div className="space-y-6">
       {/* Search Bar */}
       <div className="relative max-w-2xl mx-auto">
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
-          <input
-            ref={searchRef}
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Search titles, authors, places, years חיפוש כותרים, מחברים, מקומות"
-            className="w-full pl-12 pr-4 py-4 text-lg bg-white border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none shadow-sm transition-all"
-            dir="auto"
-          />
-          <button
-            onClick={handleSearch}
-            disabled={isSearching}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-          >
-            {isSearching ? 'searching...' : 'search'} 
-          </button>
+        <div className="space-y-3">
+          <div className="relative">
+            <input
+              ref={searchRef}
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Search in English or Hebrew"
+              className="w-full px-4 py-4 text-lg bg-white border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none shadow-sm transition-all"
+              dir="auto"
+            />
+          </div>
+          
+          <div className="flex justify-center">
+            <button
+              onClick={handleSearch}
+              disabled={isSearching}
+              className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2"
+            >
+              <Search className="h-5 w-5" />
+              {isSearching ? 'Searching...' : 'Search'}
+            </button>
+          </div>
+          
+          <p className="text-sm text-slate-600 text-center">
+            Search titles, authors, places, and publication years in English or Hebrew
+          </p>
         </div>
 
         {/* Suggestions Dropdown */}
         {showSuggestions && suggestions.length > 0 && (
-          <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+          <div className="absolute top-16 left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
             {suggestions.map((suggestion, index) => (
               <button
                 key={index}
@@ -128,10 +137,9 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
       <div className="text-center">
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-2 mx-auto"
+          className="text-blue-600 hover:text-blue-700 font-medium"
         >
-          <Filter className="h-4 w-4" />
-          Advanced Search
+          {showFilters ? 'Hide Advanced Search' : 'Show Advanced Search'}
         </button>
       </div>
 
