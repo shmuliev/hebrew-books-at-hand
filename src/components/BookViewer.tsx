@@ -161,7 +161,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
           </div>
 
           {/* Mock Book Page */}
-          <div className="mx-auto">
+          <div className="max-w-4xl mx-auto p-8">
             <div className="bg-white shadow-lg rounded-lg overflow-hidden">
               <div className="aspect-[3/4] bg-gradient-to-br from-amber-50 to-orange-50 p-12 relative">
                 {/* Hebrew Text Sample */}
