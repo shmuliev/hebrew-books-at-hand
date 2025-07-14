@@ -89,7 +89,7 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
             disabled={isSearching}
             className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
           >
-            {isSearching ? 'חיפוש...' : 'חפש'}
+            {isSearching ? 'search' : 'searching...'} 
           </button>
         </div>
 
