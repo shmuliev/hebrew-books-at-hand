@@ -99,7 +99,7 @@ const Index = () => {
                   Discover Ancient Wisdom
                 </h2>
                 <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
-                  Search through thousands of Hebrew and English texts with instant access to centuries of knowledge
+                  Search through thousands of Hebrew and English texts with instant access
                 </p>
               </div>
 
@@ -118,7 +118,7 @@ const Index = () => {
                   {[
                     { name: 'Talmud', nameHebrew: 'תלמוד', count: '2,847', icon: Book },
                     { name: 'Halacha', nameHebrew: 'הלכה', count: '5,234', icon: Book },
-                    { name: 'Philosophy', nameHebrew: 'פילוסופיה', count: '1,892', icon: Book },
+                    { name: 'Shalos Utshuvos', nameHebrew: 'ותשובת שאלות', count: '1,892', icon: Book },
                     { name: 'History', nameHebrew: 'היסטוריה', count: '3,456', icon: Book },
                     { name: 'Kabbalah', nameHebrew: 'קבלה', count: '967', icon: Book },
                     { name: 'Modern Hebrew', nameHebrew: 'עברית חדשה', count: '4,123', icon: Book }
