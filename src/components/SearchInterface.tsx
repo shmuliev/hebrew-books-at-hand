@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Filter, Calendar, MapPin, User, BookOpen, Clock } from 'lucide-react';
 
@@ -72,7 +71,7 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
     <div className="space-y-6">
       {/* Search Bar */}
       <div className="relative max-w-2xl mx-auto">
-        <div className="space-y-3">
+        <div className="space-y-4">
           <div className="relative">
             <input
               ref={searchRef}
@@ -81,25 +80,26 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
               onChange={(e) => setQuery(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Search in English or Hebrew"
-              className="w-full px-4 py-4 text-lg bg-white border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none shadow-sm transition-all"
+              className="w-full px-4 py-4 pr-32 text-lg bg-white border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none shadow-sm transition-all"
               dir="auto"
             />
-          </div>
-          
-          <div className="flex justify-center">
             <button
               onClick={handleSearch}
               disabled={isSearching}
-              className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2"
             >
-              <Search className="h-5 w-5" />
+              <Search className="h-4 w-4" />
               {isSearching ? 'Searching...' : 'Search'}
             </button>
           </div>
           
-          <p className="text-sm text-slate-600 text-center">
-            Search titles, authors, places, and publication years in English or Hebrew
-          </p>
+          <div className="text-center px-4">
+            <p className="text-sm text-slate-600 leading-relaxed">
+              <span className="block sm:inline">Search titles, authors, places, and publication years</span>
+              <span className="hidden sm:inline mx-2">•</span>
+              <span className="block sm:inline" dir="rtl">חיפוש כותרים, מחברים, מקומות ושנות הדפסה</span>
+            </p>
+          </div>
         </div>
 
         {/* Suggestions Dropdown */}
