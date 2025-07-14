@@ -15,38 +15,24 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
   isSearching
 }) => {
   const [query, setQuery] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
+    dateRange: { start: '', end: '' },
     language: '',
-    yearFrom: '',
-    yearTo: '',
-    place: '',
+    category: '',
     author: ''
   });
-  const [showFilters, setShowFilters] = useState(false);
-  const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
 
-  const mockSuggestions = [
-    { type: 'title', text: 'משנה תורה', textEn: 'Mishneh Torah' },
-    { type: 'author', text: 'רמב"ם', textEn: 'Maimonides' },
-    { type: 'title', text: 'שולחן ערוך', textEn: 'Shulchan Aruch' },
-    { type: 'place', text: 'Venice' },
-    { type: 'year', text: '1574' }
+  const suggestions = [
+    'Mishneh Torah',
+    'Shulchan Aruch',  
+    'Talmud Bavli',
+    'Rambam',
+    'Rashi',
+    'Venice 1565'
   ];
-
-  useEffect(() => {
-    if (query.length > 1) {
-      const filtered = mockSuggestions.filter(s => 
-        s.text.includes(query) || 
-        s.textEn?.toLowerCase().includes(query.toLowerCase())
-      );
-      setSuggestions(filtered);
-      setShowSuggestions(true);
-    } else {
-      setShowSuggestions(false);
-    }
-  }, [query]);
 
   const handleSearch = () => {
     if (query.trim()) {
@@ -61,24 +47,56 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
     }
   };
 
-  const selectSuggestion = (suggestion: any) => {
-    setQuery(suggestion.text);
+  const handleSuggestionClick = (suggestion: string) => {
+    setQuery(suggestion);
     setShowSuggestions(false);
-    setTimeout(() => handleSearch(), 100);
+    setTimeout(() => {
+      onSearch(suggestion, filters);
+    }, 100);
   };
+
+  const handleInputFocus = () => {
+    if (query.length > 0) {
+      setShowSuggestions(true);
+    }
+  };
+
+  const handleInputBlur = () => {
+    // Delay to allow suggestion clicks
+    setTimeout(() => setShowSuggestions(false), 200);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setQuery(value);
+    setShowSuggestions(value.length > 0);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div className="space-y-6">
       {/* Search Bar */}
-      <div className="relative max-w-2xl mx-auto">
+      <div className="relative w-full max-w-4xl mx-auto">
         <div className="space-y-4">
           <div className="relative">
             <input
               ref={searchRef}
               type="text"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={handleInputChange}
               onKeyPress={handleKeyPress}
+              onFocus={handleInputFocus}
+              onBlur={handleInputBlur}
               placeholder="Search in English or Hebrew"
               className="w-full px-4 py-4 pr-32 text-lg bg-white border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none shadow-sm transition-all"
               dir="auto"
@@ -103,55 +121,81 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
         </div>
 
         {/* Suggestions Dropdown */}
-        {showSuggestions && suggestions.length > 0 && (
-          <div className="absolute top-16 left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
-            {suggestions.map((suggestion, index) => (
-              <button
-                key={index}
-                onClick={() => selectSuggestion(suggestion)}
-                className="w-full text-left px-4 py-3 hover:bg-slate-50 border-b border-slate-100 last:border-b-0 flex items-center gap-3"
-              >
-                <div className="flex-shrink-0">
-                  {suggestion.type === 'title' && <BookOpen className="h-4 w-4 text-blue-600" />}
-                  {suggestion.type === 'author' && <User className="h-4 w-4 text-green-600" />}
-                  {suggestion.type === 'place' && <MapPin className="h-4 w-4 text-purple-600" />}
-                  {suggestion.type === 'year' && <Calendar className="h-4 w-4 text-orange-600" />}
-                </div>
-                <div className="flex-1">
-                  <div className="font-medium text-slate-900" dir="auto">
-                    {suggestion.text}
+        {showSuggestions && (
+          <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto">
+            {suggestions
+              .filter(suggestion => 
+                suggestion.toLowerCase().includes(query.toLowerCase())
+              )
+              .map((suggestion, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  className="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-b-0"
+                >
+                  <div className="flex items-center gap-3">
+                    <BookOpen className="h-4 w-4 text-slate-400" />
+                    <span className="text-slate-700">{suggestion}</span>
                   </div>
-                  {suggestion.textEn && (
-                    <div className="text-sm text-slate-500">
-                      {suggestion.textEn}
-                    </div>
-                  )}
-                </div>
-              </button>
-            ))}
+                </button>
+              ))}
           </div>
         )}
       </div>
 
-      {/* Advanced Filters */}
+      {/* Advanced Filters Toggle */}
       <div className="text-center">
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="text-blue-600 hover:text-blue-700 font-medium"
+          className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-2 mx-auto"
         >
-          {showFilters ? 'Hide Advanced Search' : 'Show Advanced Search'}
+          <Filter className="h-4 w-4" />
+          {showFilters ? 'Hide Filters' : 'Advanced Filters'}
         </button>
       </div>
 
+      {/* Advanced Filters section */}
       {showFilters && (
         <div className="bg-white rounded-lg border border-slate-200 p-6 max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Language</label>
-              <select 
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                <Calendar className="inline h-4 w-4 mr-1" />
+                Date Range
+              </label>
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  placeholder="From year"
+                  value={filters.dateRange.start}
+                  onChange={(e) => setFilters({
+                    ...filters,
+                    dateRange: { ...filters.dateRange, start: e.target.value }
+                  })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                />
+                <input
+                  type="text"
+                  placeholder="To year"
+                  value={filters.dateRange.end}
+                  onChange={(e) => setFilters({
+                    ...filters,
+                    dateRange: { ...filters.dateRange, end: e.target.value }
+                  })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                <BookOpen className="inline h-4 w-4 mr-1" />
+                Language
+              </label>
+              <select
                 value={filters.language}
-                onChange={(e) => setFilters({...filters, language: e.target.value})}
-                className="w-full p-2 border border-slate-300 rounded-md focus:border-blue-500 focus:outline-none"
+                onChange={(e) => setFilters({ ...filters, language: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:outline-none"
               >
                 <option value="">All Languages</option>
                 <option value="hebrew">Hebrew</option>
@@ -159,116 +203,92 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
                 <option value="aramaic">Aramaic</option>
               </select>
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Year From</label>
-              <input
-                type="number"
-                value={filters.yearFrom}
-                onChange={(e) => setFilters({...filters, yearFrom: e.target.value})}
-                placeholder="1450"
-                className="w-full p-2 border border-slate-300 rounded-md focus:border-blue-500 focus:outline-none"
-              />
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                <Filter className="inline h-4 w-4 mr-1" />
+                Category
+              </label>
+              <select
+                value={filters.category}
+                onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:outline-none"
+              >
+                <option value="">All Categories</option>
+                <option value="halacha">Halacha</option>
+                <option value="kabbalah">Kabbalah</option>
+                <option value="philosophy">Philosophy</option>
+                <option value="history">History</option>
+              </select>
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Year To</label>
-              <input
-                type="number"
-                value={filters.yearTo}
-                onChange={(e) => setFilters({...filters, yearTo: e.target.value})}
-                placeholder="1800"
-                className="w-full p-2 border border-slate-300 rounded-md focus:border-blue-500 focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Place Printed</label>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                <User className="inline h-4 w-4 mr-1" />
+                Author
+              </label>
               <input
                 type="text"
-                value={filters.place}
-                onChange={(e) => setFilters({...filters, place: e.target.value})}
-                placeholder="Venice, Amsterdam..."
-                className="w-full p-2 border border-slate-300 rounded-md focus:border-blue-500 focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Author</label>
-              <input
-                type="text"
+                placeholder="Author name"
                 value={filters.author}
-                onChange={(e) => setFilters({...filters, author: e.target.value})}
-                placeholder="רמב״ם, Maimonides..."
-                className="w-full p-2 border border-slate-300 rounded-md focus:border-blue-500 focus:outline-none"
-                dir="auto"
+                onChange={(e) => setFilters({ ...filters, author: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:outline-none"
               />
             </div>
           </div>
         </div>
       )}
 
-      {/* Search Results */}
+      {/* Search Results section */}
       {searchResults.length > 0 && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xl font-semibold text-slate-900">
-              Search Results ({searchResults.length})
-            </h3>
-          </div>
-          
-          <div className="grid gap-4">
+        <div className="max-w-4xl mx-auto">
+          <h3 className="text-xl font-semibold text-slate-900 mb-4">
+            Search Results ({searchResults.length})
+          </h3>
+          <div className="space-y-4">
             {searchResults.map((book) => (
               <div
                 key={book.id}
                 onClick={() => onBookSelect(book)}
-                className="bg-white rounded-lg border border-slate-200 p-6 hover:shadow-md hover:border-blue-300 transition-all cursor-pointer group"
+                className="bg-white rounded-lg border border-slate-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
               >
-                <div className="flex justify-between items-start gap-4">
+                <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <div className="flex items-start gap-4">
-                      <div className="flex-1">
-                        <h4 className="text-lg font-semibold text-slate-900 group-hover:text-blue-600 transition-colors" dir="auto">
+                    <div className="flex items-center gap-4 mb-3">
+                      <div>
+                        <h4 className="text-lg font-semibold text-slate-900" dir="auto">
                           {book.titleHebrew}
                         </h4>
-                        {book.titleEnglish && (
-                          <p className="text-slate-600 mt-1">
-                            {book.titleEnglish}
-                          </p>
-                        )}
-                        <div className="flex items-center gap-4 mt-3 text-sm text-slate-500">
-                          <span className="flex items-center gap-1">
-                            <User className="h-4 w-4" />
-                            <span dir="auto">{book.authorHebrew}</span>
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Calendar className="h-4 w-4" />
-                            {book.yearPrinted}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <MapPin className="h-4 w-4" />
-                            {book.placePrinted}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <BookOpen className="h-4 w-4" />
-                            {book.pages} pages
-                          </span>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                          Read Book
-                        </button>
+                        <p className="text-sm text-slate-600">
+                          {book.titleEnglish}
+                        </p>
                       </div>
                     </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-slate-600">
+                      <div className="flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        <span dir="auto">{book.authorHebrew} ({book.authorEnglish})</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        <span>{book.yearPrinted}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4" />
+                        <span>{book.placePrinted}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-sm text-slate-500">
+                    <Clock className="h-4 w-4" />
+                    <span>{book.pages} pages</span>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-        </div>
-      )}
-
-      {isSearching && (
-        <div className="text-center py-8">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <p className="mt-2 text-slate-600">Searching through 60,000+ books...</p>
         </div>
       )}
     </div>

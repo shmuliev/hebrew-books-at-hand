@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, X, BookOpen, ArrowLeft, ArrowRight } from 'lucide-react';
 
@@ -39,13 +38,13 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
 
   const nextPage = () => {
     if (currentPage < book.pages) {
-      setCurrentPage(isRTL ? currentPage - 1 : currentPage + 1);
+      setCurrentPage(currentPage + 1);
     }
   };
 
   const prevPage = () => {
     if (currentPage > 1) {
-      setCurrentPage(isRTL ? currentPage + 1 : currentPage - 1);
+      setCurrentPage(currentPage - 1);
     }
   };
 
