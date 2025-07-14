@@ -80,7 +80,7 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Search titles, authors, places, years... / חיפוש כותרים, מחברים, מקומות..."
+            placeholder="Search titles, authors, places, years חיפוש כותרים, מחברים, מקומות"
             className="w-full pl-12 pr-4 py-4 text-lg bg-white border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none shadow-sm transition-all"
             dir="auto"
           />
