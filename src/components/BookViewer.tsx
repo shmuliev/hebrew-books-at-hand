@@ -103,10 +103,10 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
                   {searchResults.current}/{searchResults.total}
                 </span>
                 <button onClick={prevSearchResult} className="p-1 hover:bg-slate-100 rounded">
-                  <ChevronLeft className="h-3 w-3" />
+                  <ChevronRight className="h-3 w-3" />
                 </button>
                 <button onClick={nextSearchResult} className="p-1 hover:bg-slate-100 rounded">
-                  <ChevronRight className="h-3 w-3" />
+                  <ChevronLeft className="h-3 w-3" />
                 </button>
               </div>
             )}
