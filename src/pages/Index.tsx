@@ -70,7 +70,7 @@ const Index = () => {
               <Book className="h-8 w-8 text-blue-600" />
               <div>
                 <h1 className="text-xl font-bold text-slate-900">HebrewBooks.org</h1>
-                <p className="text-xs text-slate-600">60,000+ Hebrew & English Books</p>
+                <p className="text-xs text-slate-600">60k+ Hebrew & English Books</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -96,10 +96,10 @@ const Index = () => {
               {/* Hero Section */}
               <div className="text-center mb-12">
                 <h2 className="text-4xl font-bold text-slate-900 mb-4">
-                  Discover Ancient Wisdom
+                  Discover Hebrew Books
                 </h2>
                 <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
-                  Search through thousands of Hebrew and English texts with instant access
+                  Search through thousands of books with instant access
                 </p>
               </div>
 
@@ -118,7 +118,7 @@ const Index = () => {
                   {[
                     { name: 'Talmud', nameHebrew: 'תלמוד', count: '2,847', icon: Book },
                     { name: 'Halacha', nameHebrew: 'הלכה', count: '5,234', icon: Book },
-                    { name: 'Shalos Utshuvos', nameHebrew: 'ותשובת שאלות', count: '1,892', icon: Book },
+                    { name: 'Shalos Utshuvos', nameHebrew: 'שאלות ותשובת ', count: '1,892', icon: Book },
                     { name: 'History', nameHebrew: 'היסטוריה', count: '3,456', icon: Book },
                     { name: 'Kabbalah', nameHebrew: 'קבלה', count: '967', icon: Book },
                     { name: 'Modern Hebrew', nameHebrew: 'עברית חדשה', count: '4,123', icon: Book }
