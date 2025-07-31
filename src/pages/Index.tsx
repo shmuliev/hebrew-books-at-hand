@@ -90,7 +90,7 @@ const Index = () => {
 
       <div className="flex max-w-7xl mx-auto">
         {/* Main Content Area */}
-        <div className={`flex-1 transition-all duration-300 ${selectedBook ? 'lg:mr-10' : ''}`}>
+        <div className={`flex-1 transition-all duration-300 ${selectedBook ? 'lg:mr-0' : ''}`}>
           {!selectedBook ? (
             <div className="px-4 sm:px-6 lg:px-8 py-8">
               {/* Hero Section */}
