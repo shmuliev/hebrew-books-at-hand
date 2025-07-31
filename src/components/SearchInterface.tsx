@@ -87,7 +87,7 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
           <button
               onClick={handleSearch}
               disabled={isSearching}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2 border-6 border-blue-600"
+              className="bg-blue-600 text-white px-6 py-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2 border-2 border-blue-600"
             >
               <Search className="h-4 w-4" />
               {isSearching ? 'Searching...' : 'Search'}
