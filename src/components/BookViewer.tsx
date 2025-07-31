@@ -51,9 +51,9 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight') {
+      if (e.key === 'ArrowLeft') {
         isRTL ? nextPage() : prevPage();
-      } else if (e.key === 'ArrowLeft') {
+      } else if (e.key === 'ArrowRight') {
         isRTL ? prevPage() : nextPage();
       } else if (e.key === 'Escape') {
         onClose();
@@ -146,7 +146,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
               disabled={currentPage === 1}
               className="p-3 bg-white rounded-full shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
-              {isRTL ? <ArrowLeft className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />}
+              {isRTL ? <ArrowRight className="h-5 w-5" /> : <ArrowLeft className="h-5 w-5" />}
             </button>
           </div>
 
@@ -156,7 +156,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
               disabled={currentPage === book.pages}
               className="p-3 bg-white rounded-full shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
-              {isRTL ? <ArrowRight className="h-5 w-5" /> : <ArrowLeft className="h-5 w-5" />}
+              {isRTL ? <ArrowLeft className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />}
             </button>
           </div>
 

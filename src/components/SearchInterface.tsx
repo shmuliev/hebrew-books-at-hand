@@ -67,13 +67,12 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
     setTimeout(() => handleSearch(), 100);
   };
 
-  
   return (
     <div className="space-y-6">
       {/* Search Bar */}
-      <div className="flex items-center gap-4">
+      <div className="relative max-w-2xl mx-auto">
         <div className="space-y-4">
-          <div className="flex items-center gap-4">
+          <div className="relative">
             <input
               ref={searchRef}
               type="text"
@@ -81,22 +80,18 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
               onChange={(e) => setQuery(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Search in English or Hebrew"
-              className="flex-1 px-4 py-4 text-lg bg-white border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none shadow-sm transition-all"
+              className="w-full px-4 py-4 pr-32 text-lg bg-white border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none shadow-sm transition-all"
               dir="auto"
             />
-          <button
+            <button
               onClick={handleSearch}
               disabled={isSearching}
-              className="bg-blue-600 text-white px-6 py-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2 border-2 border-blue-600"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2"
             >
               <Search className="h-4 w-4" />
               {isSearching ? 'Searching...' : 'Search'}
-            </button>  
+            </button>
           </div>
-          
-            
-  
- 
           
           <div className="text-center px-4">
             <p className="text-sm text-slate-600 leading-relaxed">
