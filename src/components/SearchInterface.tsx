@@ -118,7 +118,7 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
   return (
     <div className="space-y-6">
       {/* Search Bar Section - This div centers the main search elements */}
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-3xl mx-auto">
 
         {/* NEW: Outer flex container for the keyboard toggle and the search input/button group */}
         {/* items-center vertically aligns them, gap-4 adds space between them */}
