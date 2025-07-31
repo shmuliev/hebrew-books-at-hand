@@ -71,7 +71,7 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
   return (
     <div className="space-y-6">
       {/* Search Bar */}
-      <div className="flex item-center gap-4">
+      <div className="flex items-center gap-4">
         <div className="space-y-4">
           <div className="flex items-center gap-4">
             <input
