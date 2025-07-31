@@ -295,4 +295,11 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
             aria-label={isRTL ? "Previous Page" : "Next Page"}
           >
             {isRTL ? <ArrowLeft className="h-4 w-4 md:hidden" /> : <ArrowRight className="h-4 w-4 md:hidden" />}
-            <span className="hidden md:inline">Next</span> {/* Text visible
+            <span className="hidden md:inline">Next</span> {/* Text visible on desktop */}
+            <span className="inline md:hidden">{isRTL ? "Prev" : "Next"}</span> {/* Shorter text for mobile */}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
