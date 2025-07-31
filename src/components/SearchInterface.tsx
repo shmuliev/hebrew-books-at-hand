@@ -69,12 +69,12 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Search Bar */}
-      {/* This div acts as the main container for the search input, button, tip, and suggestions */}
-      {/* It's relative for the absolute suggestions dropdown, centered with mx-auto, and has max-width */}
-      <div className="relative max-w-2xl mx-auto space-y-4">
-        {/* Input and Button Row - uses flex to put them side-by-side and items-stretch for equal height */}
-        <div className="flex items-stretch gap-4">
+      {/* Search Bar Section - This div centers the main search elements */}
+      <div className="max-w-2xl mx-auto">
+
+        {/* This inner div is the relative container for the absolutely positioned suggestions dropdown. */}
+        {/* It contains the input and button, arranged using flex and items-stretch for equal height. */}
+        <div className="relative flex items-stretch gap-4">
           <input
             ref={searchRef}
             type="text"
@@ -82,23 +82,53 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
             onChange={(e) => setQuery(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Search in English or Hebrew"
-            // flex-1 makes it grow to fill available space, px-4 py-4 define padding
+            // `flex-1` makes it grow to fill available space, `px-4 py-4` define padding
             className="flex-1 px-4 py-4 text-lg bg-white border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none shadow-sm transition-all"
             dir="auto"
           />
           <button
             onClick={handleSearch}
             disabled={isSearching}
-            // Removed absolute positioning, added py-4 and border-2 for consistent height with input
+            // Removed absolute positioning, `py-4` and `border-2` ensure consistent height with input due to `items-stretch` on parent
             className="bg-blue-600 text-white px-6 py-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2 border-2 border-blue-600"
           >
             <Search className="h-4 w-4" />
             {isSearching ? 'Searching...' : 'Search'}
           </button>
-        </div> {/* End of flex items-stretch gap-4 div (Input and Button Row) */}
 
-        {/* Search Tip Text */}
-        <div className="text-center px-4">
+          {/* Suggestions Dropdown - now positioned relative to the flex container (input/button row) */}
+          {showSuggestions && suggestions.length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+              {suggestions.map((suggestion, index) => (
+                <button
+                  key={index}
+                  onClick={() => selectSuggestion(suggestion)}
+                  className="w-full text-left px-4 py-3 hover:bg-slate-50 border-b border-slate-100 last:border-b-0 flex items-center gap-3"
+                >
+                  <div className="flex-shrink-0">
+                    {suggestion.type === 'title' && <BookOpen className="h-4 w-4 text-blue-600" />}
+                    {suggestion.type === 'author' && <User className="h-4 w-4 text-green-600" />}
+                    {suggestion.type === 'place' && <MapPin className="h-4 w-4 text-purple-600" />}
+                    {suggestion.type === 'year' && <Calendar className="h-4 w-4 text-orange-600" />}
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-medium text-slate-900" dir="auto">
+                      {suggestion.text}
+                    </div>
+                    {suggestion.textEn && (
+                      <div className="text-sm text-slate-500">
+                        {suggestion.textEn}
+                      </div>
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div> {/* End of relative flex items-stretch gap-4 div (Input, Button, and Suggestions) */}
+
+        {/* Search Tip Text - placed below the input/button/suggestions container, using margin-top for spacing */}
+        <div className="text-center px-4 mt-4">
           <p className="text-sm text-slate-600 leading-relaxed">
             <span className="block sm:inline">Search titles, authors, places, and publication years</span>
             <span className="hidden sm:inline mx-2">•</span>
@@ -106,38 +136,7 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
           </p>
         </div> {/* End of text-center px-4 div (Search Tip Text) */}
 
-        {/* Suggestions Dropdown */}
-        {/* Positioned absolutely relative to the 'relative max-w-2xl mx-auto space-y-4' parent div */}
-        {showSuggestions && suggestions.length > 0 && (
-          <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
-            {suggestions.map((suggestion, index) => (
-              <button
-                key={index}
-                onClick={() => selectSuggestion(suggestion)}
-                className="w-full text-left px-4 py-3 hover:bg-slate-50 border-b border-slate-100 last:border-b-0 flex items-center gap-3"
-              >
-                <div className="flex-shrink-0">
-                  {suggestion.type === 'title' && <BookOpen className="h-4 w-4 text-blue-600" />}
-                  {suggestion.type === 'author' && <User className="h-4 w-4 text-green-600" />}
-                  {suggestion.type === 'place' && <MapPin className="h-4 w-4 text-purple-600" />}
-                  {suggestion.type === 'year' && <Calendar className="h-4 w-4 text-orange-600" />}
-                </div>
-                <div className="flex-1">
-                  <div className="font-medium text-slate-900" dir="auto">
-                    {suggestion.text}
-                  </div>
-                  {suggestion.textEn && (
-                    <div className="text-sm text-slate-500">
-                      {suggestion.textEn}
-                    </div>
-                  )}
-                </div>
-              </button>
-            ))}
-          </div>
-        )} {/* End of Suggestions Dropdown div */}
-
-      </div> {/* End of relative max-w-2xl mx-auto space-y-4 div (Search Bar section) */}
+      </div> {/* End of max-w-2xl mx-auto div (Search Bar Section) */}
 
       {/* Advanced Filters */}
       <div className="text-center">
