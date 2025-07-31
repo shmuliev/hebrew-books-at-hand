@@ -18,6 +18,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
   // Mock search within book
   const handleSearchInBook = useCallback(() => {
     if (searchInBook.trim()) {
+      // Simulate finding results
       setSearchResults({ total: 15, current: 1 });
     } else {
       setSearchResults({ total: 0, current: 0 });
@@ -51,9 +52,11 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight') {
-        isRTL ? prevPage() : nextPage();
+        // Adjust for RTL/LTR book direction logic for right arrow key
+        isRTL ? prevPage() : nextPage(); // RTL: Right arrow goes to previous page. LTR: Right arrow goes to next page.
       } else if (e.key === 'ArrowLeft') {
-        isRTL ? nextPage() : prevPage();
+        // Adjust for RTL/LTR book direction logic for left arrow key
+        isRTL ? nextPage() : prevPage(); // RTL: Left arrow goes to next page. LTR: Left arrow goes to previous page.
       } else if (e.key === 'Escape') {
         onClose();
       }
