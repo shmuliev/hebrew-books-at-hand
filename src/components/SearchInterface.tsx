@@ -52,13 +52,13 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
     }
   }, [query]);
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     if (query.trim()) {
       onSearch(query, filters);
       setShowSuggestions(false);
       setIsKeyboardOpen(false);
     }
-  };
+  }, [query, filters, onSearch]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -70,6 +70,7 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
     setQuery(suggestion.text);
     setShowSuggestions(false);
     setIsKeyboardOpen(false);
+    // Timeout to allow state update before search, then trigger search
     setTimeout(() => handleSearch(), 100);
   };
 
@@ -118,10 +119,9 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
   return (
     <div className="space-y-6">
       {/* Search Bar Section - This div centers the main search elements */}
-      <div className="max-w-3xl mx-auto"> {/* Changed from max-w-2xl to max-w-3xl or your preferred width */}
+      <div className="max-w-3xl mx-auto">
 
         {/* --- DESKTOP VIEW: Keyboard Toggle + Search Input/Button --- */}
-        {/* Hidden on small screens, flex on medium and larger screens */}
         <div className="hidden md:flex items-center gap-4">
 
           {/* Keyboard Toggle Button (Desktop Version) */}
@@ -166,7 +166,7 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
 
             {/* Suggestions Dropdown (common to both views) */}
             {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto p-2"> {/* Added p-2 */}
                 {suggestions.map((suggestion, index) => (
                   <button
                     key={index}
@@ -198,11 +198,9 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
         </div> {/* End of desktop flex container */}
 
         {/* --- MOBILE VIEW: Input (top), then Toggle+Search Button (below) --- */}
-        {/* Flex column on small screens, hidden on medium and larger screens */}
         <div className="flex flex-col gap-4 md:hidden">
 
           {/* Input Field (Mobile Version) - now takes full width */}
-          {/* Ensure this div is relative for the suggestions dropdown */}
           <div className="relative w-full">
             <input
               ref={searchRef}
@@ -221,7 +219,7 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
             />
             {/* Suggestions Dropdown (common to both views) - remains within this relative div */}
             {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto px-4 py-2"> {/* Added px-4 py-2 */}
                 {suggestions.map((suggestion, index) => (
                   <button
                     key={index}
@@ -251,12 +249,11 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
           </div> {/* End of mobile input field div */}
 
           {/* NEW: Keyboard Toggle Button + Search Button (Mobile Version) - on next line */}
-          {/* This div now ensures the toggle is on the left, and the search button expands to the right */}
-          <div className="flex items-center gap-4"> {/* Removed justify-center here */}
+          <div className="flex items-center gap-4">
             {/* Keyboard Toggle Button */}
             <button
               onClick={toggleKeyboard}
-              className="flex-shrink-0 flex items-center gap-1 text-slate-600 hover:text-blue-600 transition-colors px-3 py-2 rounded-lg" // Added flex-shrink-0
+              className="flex-shrink-0 flex items-center gap-1 text-slate-600 hover:text-blue-600 transition-colors px-3 py-2 rounded-lg"
               title={isKeyboardOpen ? "Close Keyboard" : "Open On-screen Keyboard"}
             >
               {isKeyboardOpen ? (
@@ -271,7 +268,7 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
             <button
               onClick={handleSearch}
               disabled={isSearching}
-              className="flex-1 bg-blue-600 text-white px-6 py-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2 border-2 border-blue-600" // Added flex-1 and justify-center
+              className="flex-1 bg-blue-600 text-white px-6 py-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2 border-2 border-blue-600"
             >
               <Search className="h-4 w-4" />
               {isSearching ? 'Searching...' : 'Search'}
