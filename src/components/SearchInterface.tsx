@@ -118,7 +118,7 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
   return (
     <div className="space-y-6">
       {/* Search Bar Section - This div centers the main search elements */}
-      <div className="max-w-3xl mx-auto"> {/* Changed from max-w-2xl to max-w-3xl or your preferred width */}
+      <div className="max-w-3xl mx-auto">
 
         {/* --- DESKTOP VIEW: Keyboard Toggle + Search Input/Button --- */}
         {/* Hidden on small screens, flex on medium and larger screens */}
@@ -197,12 +197,13 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
 
         </div> {/* End of desktop flex container */}
 
-        {/* --- MOBILE VIEW: Search Input/Button (top) then Keyboard Toggle (below) --- */}
+        {/* --- MOBILE VIEW: Input (top), then Toggle+Search Button (below) --- */}
         {/* Flex column on small screens, hidden on medium and larger screens */}
         <div className="flex flex-col gap-4 md:hidden">
 
-          {/* Input, Search Button, Suggestions (Mobile Version) */}
-          <div className="relative flex items-stretch gap-4">
+          {/* Input Field (Mobile Version) - now takes full width */}
+          {/* Ensure this div is relative for the suggestions dropdown */}
+          <div className="relative w-full"> {/* w-full ensures it takes full available width */}
             <input
               ref={searchRef}
               type="text"
@@ -215,18 +216,9 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
               }}
               onKeyPress={handleKeyPress}
               placeholder="Search in English or Hebrew"
-              className="flex-1 px-4 py-4 text-lg bg-white border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none shadow-sm transition-all"
+              className="w-full px-4 py-4 text-lg bg-white border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none shadow-sm transition-all"
               dir="auto"
             />
-            <button
-              onClick={handleSearch}
-              disabled={isSearching}
-              className="bg-blue-600 text-white px-6 py-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2 border-2 border-blue-600"
-            >
-              <Search className="h-4 w-4" />
-              {isSearching ? 'Searching...' : 'Search'}
-            </button>
-
             {/* Suggestions Dropdown (common to both views) - remains within this relative div */}
             {showSuggestions && suggestions.length > 0 && (
               <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
@@ -256,10 +248,11 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
                 ))}
               </div>
             )}
-          </div> {/* End of mobile input/button/suggestions div */}
+          </div> {/* End of mobile input field div */}
 
-          {/* Keyboard Toggle Button (Mobile Version) - placed below the input row */}
-          <div className="flex justify-center"> {/* Centers the button horizontally */}
+          {/* NEW: Keyboard Toggle Button + Search Button (Mobile Version) - on next line */}
+          <div className="flex items-center justify-center gap-4"> {/* Flex row for these two, centered */}
+            {/* Keyboard Toggle Button */}
             <button
               onClick={toggleKeyboard}
               className="flex items-center gap-1 text-slate-600 hover:text-blue-600 transition-colors px-3 py-2 rounded-lg"
@@ -271,6 +264,16 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
                   <KeyboardIcon className="h-6 w-6" />
               )}
               <span className="text-xl font-bold" dir="rtl">ע</span>
+            </button>
+
+            {/* Search Button (Mobile Version) */}
+            <button
+              onClick={handleSearch}
+              disabled={isSearching}
+              className="bg-blue-600 text-white px-6 py-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2 border-2 border-blue-600"
+            >
+              <Search className="h-4 w-4" />
+              {isSearching ? 'Searching...' : 'Search'}
             </button>
           </div>
 
