@@ -127,15 +127,17 @@ const Index = () => {
                         <category.icon className="h-6 w-6 text-blue-600" />
                         <span className="text-sm text-slate-500">{category.count} books</span>
                       </div>
-                      {/* MODIFIED SECTION: Combined Hebrew and English category names */}
-                      <h4 className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors leading-tight" dir="auto">
-                        {category.nameHebrew}
-                        {category.name && ( // Only show English if it exists
-                          <span className="text-sm font-normal text-slate-600 ml-1">
-                            ({category.name})
+                      {/* MODIFIED SECTION: English on left, Hebrew on right */}
+                      <div className="flex items-center justify-between w-full"> {/* Added w-full */}
+                        {category.name && (
+                          <span className="text-base font-normal text-slate-600">
+                            {category.name}
                           </span>
                         )}
-                      </h4>
+                        <span className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors" dir="rtl">
+                          {category.nameHebrew}
+                        </span>
+                      </div>
                       {/* END MODIFIED SECTION */}
                     </div>
                   ))}
