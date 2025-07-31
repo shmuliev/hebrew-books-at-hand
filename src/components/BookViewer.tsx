@@ -39,12 +39,14 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
 
   const nextPage = useCallback(() => {
     if (currentPage < book.pages) {
+      // Adjust page change based on RTL/LTR
       setCurrentPage(isRTL ? currentPage - 1 : currentPage + 1);
     }
   }, [currentPage, book.pages, isRTL]);
 
   const prevPage = useCallback(() => {
     if (currentPage > 1) {
+      // Adjust page change based on RTL/LTR
       setCurrentPage(isRTL ? currentPage + 1 : currentPage - 1);
     }
   }, [currentPage, isRTL]);
@@ -215,6 +217,29 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
           className="flex-1 overflow-auto bg-slate-50 relative"
           style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'center top' }}
         >
+          {/* --- IN-PAGE NAVIGATION ARROWS --- */}
+          {/* Left Arrow */}
+          <button
+            onClick={prevPage}
+            disabled={currentPage === 1}
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 p-3 bg-white/70 backdrop-blur-sm rounded-full shadow-lg hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed transition-all z-10"
+            aria-label={isRTL ? "Next Page" : "Previous Page"}
+          >
+            {isRTL ? <ArrowRight className="h-6 w-6 text-slate-700" /> : <ArrowLeft className="h-6 w-6 text-slate-700" />}
+          </button>
+
+          {/* Right Arrow */}
+          <button
+            onClick={nextPage}
+            disabled={currentPage === book.pages}
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 p-3 bg-white/70 backdrop-blur-sm rounded-full shadow-lg hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed transition-all z-10"
+            aria-label={isRTL ? "Previous Page" : "Next Page"}
+          >
+            {isRTL ? <ArrowLeft className="h-6 w-6 text-slate-700" /> : <ArrowRight className="h-6 w-6 text-slate-700" />}
+          </button>
+          {/* --- END IN-PAGE NAVIGATION ARROWS --- */}
+
+
           {/* Mock Book Page - Adjusted for responsive padding */}
           <div className="w-full flex justify-center py-8 px-4 sm:px-8 md:px-12">
             <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl w-full">
@@ -254,7 +279,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
         </div>
       </div>
 
-      {/* Bottom Controls - Now includes page navigation */}
+      {/* Bottom Controls - Includes page navigation, slider, and RTL toggle */}
       <div className="bg-white border-t border-slate-200 px-4 md:px-6 py-3 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2">
           <button
@@ -280,7 +305,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
           </span>
         </div>
 
-        {/* Page Navigation Buttons - Moved here for mobile friendliness */}
+        {/* Page Navigation Buttons for Bottom Bar (Desktop view shows "Previous/Next", Mobile uses icons) */}
         <div className="flex items-center gap-2">
           <button
             onClick={prevPage}
