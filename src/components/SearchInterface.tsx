@@ -70,29 +70,29 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
   
   return (
     <div className="space-y-6">
-      {/* Search Bar */}
-      <div className="flex item-center gap-4">
-        <div className="space-y-4">
-          <div className="relative">
-            <input
-              ref={searchRef}
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Search in English or Hebrew"
-              className="w-full px-4 py-4 pr-32 text-lg bg-white border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none shadow-sm transition-all"
-              dir="auto"
-            />
-          <button
-              onClick={handleSearch}
-              disabled={isSearching}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2"
-            >
-              <Search className="h-4 w-4" />
-              {isSearching ? 'Searching...' : 'Search'}
-            </button>  
-          </div>
+      {/* Search Bar */}
+      <div className="flex item-center gap-4">
+        <div className="space-y-4">
+          <div className="flex items-center gap-4">
+            <input
+              ref={searchRef}
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Search in English or Hebrew"
+              className="flex-1 px-4 py-4 text-lg bg-white border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none shadow-sm transition-all"
+              dir="auto"
+            />
+          <button
+              onClick={handleSearch}
+              disabled={isSearching}
+              className="bg-blue-600 text-white px-6 py-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2 border-2 border-blue-600"
+            >
+              <Search className="h-4 w-4" />
+              {isSearching ? 'Searching...' : 'Search'}
+            </button>  
+          </div>
           
             
   
