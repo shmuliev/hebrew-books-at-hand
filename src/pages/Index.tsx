@@ -122,23 +122,25 @@ const Index = () => {
                     { name: 'History', nameHebrew: 'היסטוריה', count: '3,456', icon: Book },
                     { name: 'Kabbalah', nameHebrew: 'קבלה', count: '967', icon: Book }
                   ].map((category, index) => (
-                    <div key={index} className="bg-white rounded-lg shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow cursor-pointer group">
-                      <div className="flex items-center justify-between mb-3">
-                        <category.icon className="h-6 w-6 text-blue-600" />
-                        <span className="text-sm text-slate-500">{category.count} books</span>
-                      </div>
-                      {/* MODIFIED SECTION: English on left, Hebrew on right */}
-                      <div className="flex items-center justify-between w-full"> {/* Added w-full */}
+                    <div key={index} className="bg-white rounded-lg shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow cursor-pointer group flex flex-col justify-between">
+                      {/* Removed the div that contained the icon and count */}
+                      
+                      {/* Combined English (left) and Hebrew (right) names */}
+                      <div className="flex items-center justify-between w-full">
                         {category.name && (
                           <span className="text-base font-normal text-slate-600">
                             {category.name}
                           </span>
                         )}
-                        <span className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors" dir="rtl">
+                        <span className="text-xl font-semibold text-slate-900 group-hover:text-blue-600 transition-colors" dir="rtl">
                           {category.nameHebrew}
                         </span>
                       </div>
-                      {/* END MODIFIED SECTION */}
+
+                      {/* Book count below Hebrew title, aligned right */}
+                      <div className="w-full text-right mt-2">
+                        <span className="text-sm text-slate-500">{category.count} books</span>
+                      </div>
                     </div>
                   ))}
                 </div>
