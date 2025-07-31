@@ -73,7 +73,7 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
       {/* Search Bar */}
       <div className="flex item-center gap-4">
         <div className="space-y-4">
-          <div className="relative">
+          <div className="flex items-center gap-4">
             <input
               ref={searchRef}
               type="text"
