@@ -37,8 +37,8 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
 
   useEffect(() => {
     if (query.length > 1) {
-      const filtered = mockSuggestions.filter(s => 
-        s.text.includes(query) || 
+      const filtered = mockSuggestions.filter(s =>
+        s.text.includes(query) ||
         s.textEn?.toLowerCase().includes(query.toLowerCase())
       );
       setSuggestions(filtered);
@@ -70,41 +70,46 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
   return (
     <div className="space-y-6">
       {/* Search Bar */}
-      <div className="relative max-w-2xl mx-auto">
-        <div className="space-y-4">
-          <div className="relative">
-            <input
-              ref={searchRef}
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Search in English or Hebrew"
-              className="w-full px-4 py-4 pr-32 text-lg bg-white border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none shadow-sm transition-all"
-              dir="auto"
-            />
-            <button
-              onClick={handleSearch}
-              disabled={isSearching}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2"
-            >
-              <Search className="h-4 w-4" />
-              {isSearching ? 'Searching...' : 'Search'}
-            </button>
-          </div>
-          
-          <div className="text-center px-4">
-            <p className="text-sm text-slate-600 leading-relaxed">
-              <span className="block sm:inline">Search titles, authors, places, and publication years</span>
-              <span className="hidden sm:inline mx-2">•</span>
-              <span className="block sm:inline" dir="rtl">חיפוש כותרים, מחברים, מקומות ושנות הדפסה</span>
-            </p>
-          </div>
-        </div>
+      {/* This div acts as the main container for the search input, button, tip, and suggestions */}
+      {/* It's relative for the absolute suggestions dropdown, centered with mx-auto, and has max-width */}
+      <div className="relative max-w-2xl mx-auto space-y-4">
+        {/* Input and Button Row - uses flex to put them side-by-side and items-stretch for equal height */}
+        <div className="flex items-stretch gap-4">
+          <input
+            ref={searchRef}
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Search in English or Hebrew"
+            // flex-1 makes it grow to fill available space, px-4 py-4 define padding
+            className="flex-1 px-4 py-4 text-lg bg-white border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none shadow-sm transition-all"
+            dir="auto"
+          />
+          <button
+            onClick={handleSearch}
+            disabled={isSearching}
+            // Removed absolute positioning, added py-4 and border-2 for consistent height with input
+            className="bg-blue-600 text-white px-6 py-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2 border-2 border-blue-600"
+          >
+            <Search className="h-4 w-4" />
+            {isSearching ? 'Searching...' : 'Search'}
+          </button>
+        </div> {/* End of flex items-stretch gap-4 div (Input and Button Row) */}
+
+        {/* Search Tip Text */}
+        <div className="text-center px-4">
+          <p className="text-sm text-slate-600 leading-relaxed">
+            <span className="block sm:inline">Search titles, authors, places, and publication years</span>
+            <span className="hidden sm:inline mx-2">•</span>
+            <span className="block sm:inline" dir="rtl">חיפוש כותרים, מחברים, מקומות ושנות הדפסה</span>
+          </p>
+        </div> {/* End of text-center px-4 div (Search Tip Text) */}
 
         {/* Suggestions Dropdown */}
+        {/* Positioned absolutely relative to the 'relative max-w-2xl mx-auto space-y-4' parent div */}
         {showSuggestions && suggestions.length > 0 && (
-          <div className="absolute top-16 left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+          <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
             {suggestions.map((suggestion, index) => (
               <button
                 key={index}
@@ -130,8 +135,9 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
               </button>
             ))}
           </div>
-        )}
-      </div>
+        )} {/* End of Suggestions Dropdown div */}
+
+      </div> {/* End of relative max-w-2xl mx-auto space-y-4 div (Search Bar section) */}
 
       {/* Advanced Filters */}
       <div className="text-center">
@@ -148,7 +154,7 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Language</label>
-              <select 
+              <select
                 value={filters.language}
                 onChange={(e) => setFilters({...filters, language: e.target.value})}
                 className="w-full p-2 border border-slate-300 rounded-md focus:border-blue-500 focus:outline-none"
@@ -212,7 +218,7 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
               Search Results ({searchResults.length})
             </h3>
           </div>
-          
+
           <div className="grid gap-4">
             {searchResults.map((book) => (
               <div
