@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react'; // Added useCallback
 import { Search, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, X, BookOpen, ArrowLeft, ArrowRight } from 'lucide-react';
 
 interface BookViewerProps {
@@ -16,14 +16,14 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
   const [showMobileSearchAndZoom, setShowMobileSearchAndZoom] = useState(false); // New state for mobile header
 
   // Mock search within book
-  const handleSearchInBook = () => {
+  const handleSearchInBook = useCallback(() => { // Memoized with useCallback
     if (searchInBook.trim()) {
       // Simulate finding results
       setSearchResults({ total: 15, current: 1 });
     } else {
       setSearchResults({ total: 0, current: 0 });
     }
-  };
+  }, [searchInBook]); // Dependency on searchInBook
 
   const nextSearchResult = () => {
     if (searchResults.current < searchResults.total) {
@@ -37,17 +37,17 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
     }
   };
 
-  const nextPage = () => {
+  const nextPage = useCallback(() => { // Memoized with useCallback
     if (currentPage < book.pages) {
       setCurrentPage(isRTL ? currentPage - 1 : currentPage + 1);
     }
-  };
+  }, [currentPage, book.pages, isRTL]); // Dependencies for useCallback
 
-  const prevPage = () => {
+  const prevPage = useCallback(() => { // Memoized with useCallback
     if (currentPage > 1) {
       setCurrentPage(isRTL ? currentPage + 1 : currentPage - 1);
     }
-  };
+  }, [currentPage, isRTL]); // Dependencies for useCallback
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -64,7 +64,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentPage, isRTL, nextPage, prevPage, onClose]); // Added dependencies
+  }, [currentPage, isRTL, nextPage, prevPage, onClose]); // Added all necessary dependencies
 
   // Ensure scroll position is reset when page changes
   useEffect(() => {
@@ -75,28 +75,27 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
 
 
   return (
-    <div className="h-screen flex flex-col bg-white overflow-hidden"> {/* Added overflow-hidden to outer div */}
+    <div className="h-screen flex flex-col bg-white overflow-hidden">
       {/* Book Viewer Header */}
-      <div className="bg-white border-b border-slate-200 px-4 md:px-6 py-3 md:py-4 flex items-center justify-between flex-wrap gap-2"> {/* Adjusted padding and added flex-wrap */}
-        <div className="flex items-center gap-2 md:gap-4 flex-grow"> {/* Added flex-grow */}
+      <div className="bg-white border-b border-slate-200 px-4 md:px-6 py-3 md:py-4 flex items-center justify-between flex-wrap gap-2">
+        <div className="flex items-center gap-2 md:gap-4 flex-grow">
           <button
             onClick={onClose}
             className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
           >
             <X className="h-5 w-5 text-slate-600" />
           </button>
-          <div className="min-w-0"> {/* Use min-w-0 to allow text to shrink */}
-            <h2 className="font-semibold text-slate-900 truncate" dir="auto"> {/* Added truncate */}
+          <div className="min-w-0">
+            <h2 className="font-semibold text-slate-900 truncate" dir="auto">
               {book.titleHebrew}
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600 truncate" dir="auto"> {/* Added truncate and adjusted font size */}
+            <p className="text-xs sm:text-sm text-slate-600 truncate" dir="auto">
               {book.authorHebrew} • {book.yearPrinted} • {book.placePrinted}
             </p>
           </div>
         </div>
 
-        {/* Search & Zoom Controls (Hidden on mobile by default, toggled by icon) */}
-        {/* Desktop view */}
+        {/* Search & Zoom Controls (Desktop view) */}
         <div className="hidden md:flex items-center gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -202,27 +201,25 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
       </div> {/* End Book Viewer Header */}
 
       {/* Main Viewer Area */}
-      <div className="flex-1 flex overflow-hidden"> {/* Added overflow-hidden here */}
+      <div className="flex-1 flex overflow-hidden">
         {/* Book Content (mock page) */}
         <div
           ref={viewerRef}
           className="flex-1 overflow-auto bg-slate-50 relative"
           style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'center top' }}
         >
-          {/* Page navigation buttons are removed from here */}
-
           {/* Mock Book Page - Adjusted for responsive padding */}
-          <div className="w-full flex justify-center py-8 px-4 sm:px-8 md:px-12"> {/* Replaced max-w-4xl mx-auto p-8 with responsive padding */}
-            <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl w-full"> {/* max-w-4xl applied here, w-full ensures it takes available width up to max */}
-              <div className="aspect-[3/4] bg-gradient-to-br from-amber-50 to-orange-50 p-6 sm:p-8 md:p-12 relative"> {/* Adjusted padding */}
+          <div className="w-full flex justify-center py-8 px-4 sm:px-8 md:px-12">
+            <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl w-full">
+              <div className="aspect-[3/4] bg-gradient-to-br from-amber-50 to-orange-50 p-6 sm:p-8 md:p-12 relative">
                 {/* Hebrew Text Sample */}
                 <div className="space-y-6" dir="rtl">
-                  <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 text-center border-b-2 border-slate-300 pb-4"> {/* Responsive text size */}
+                  <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 text-center border-b-2 border-slate-300 pb-4">
                     {book.titleHebrew}
                   </h3>
 
                   {/* Sample Hebrew text with highlighting for search */}
-                  <div className="text-base sm:text-lg leading-relaxed text-slate-800 space-y-4"> {/* Responsive text size */}
+                  <div className="text-base sm:text-lg leading-relaxed text-slate-800 space-y-4">
                     <p className={searchInBook && searchInBook.includes('משה') ? 'bg-yellow-200' : ''}>
                       וְאָמַר רַבִּי יְהוֹשֻׁעַ בֶּן לֵוִי: כָּל הַמְהַלֵּךְ בַּדֶּרֶךְ וְאֵין עִמּוֹ לְוַיָּה, יַעֲסֹק בַּתּוֹרָה. שֶׁנֶּאֱמַר: כִּי לִוְיַת חֵן הֵם לְרֹאשֶׁךָ וַעֲנָקִים לְגַרְגְּרֹתֶיךָ.
                     </p>
@@ -251,7 +248,7 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
       </div>
 
       {/* Bottom Controls - Now includes page navigation */}
-      <div className="bg-white border-t border-slate-200 px-4 md:px-6 py-3 flex items-center justify-between flex-wrap gap-2"> {/* Adjusted padding and added flex-wrap */}
+      <div className="bg-white border-t border-slate-200 px-4 md:px-6 py-3 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsRTL(!isRTL)}
@@ -262,16 +259,16 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
         </div>
 
         {/* Page Slider and Current Page Info */}
-        <div className="flex items-center gap-2 flex-grow justify-center md:flex-grow-0 min-w-0 md:min-w-[auto]"> {/* Added flex-grow and min-w-0 */}
+        <div className="flex items-center gap-2 flex-grow justify-center md:flex-grow-0 min-w-0 md:min-w-[auto]">
           <input
             type="range"
             min="1"
             max={book.pages}
             value={currentPage}
             onChange={(e) => setCurrentPage(parseInt(e.target.value))}
-            className="w-24 sm:w-32" {/* Adjusted width */}
+            className="w-24 sm:w-32"
           />
-          <span className="text-sm text-slate-600 min-w-16 text-center"> {/* Adjusted min-w */}
+          <span className="text-sm text-slate-600 min-w-16 text-center">
             {currentPage} / {book.pages}
           </span>
         </div>
@@ -285,8 +282,8 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
             aria-label={isRTL ? "Next Page" : "Previous Page"}
           >
             {isRTL ? <ArrowRight className="h-4 w-4 md:hidden" /> : <ArrowLeft className="h-4 w-4 md:hidden" />}
-            <span className="hidden md:inline">Previous</span> {/* Text visible on desktop */}
-            <span className="inline md:hidden">{isRTL ? "Next" : "Prev"}</span> {/* Shorter text for mobile */}
+            <span className="hidden md:inline">Previous</span>
+            <span className="inline md:hidden">{isRTL ? "Next" : "Prev"}</span>
           </button>
           <button
             onClick={nextPage}
@@ -295,8 +292,8 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
             aria-label={isRTL ? "Previous Page" : "Next Page"}
           >
             {isRTL ? <ArrowLeft className="h-4 w-4 md:hidden" /> : <ArrowRight className="h-4 w-4 md:hidden" />}
-            <span className="hidden md:inline">Next</span> {/* Text visible on desktop */}
-            <span className="inline md:hidden">{isRTL ? "Prev" : "Next"}</span> {/* Shorter text for mobile */}
+            <span className="hidden md:inline">Next</span>
+            <span className="inline md:hidden">{isRTL ? "Prev" : "Next"}</span>
           </button>
         </div>
       </div>
