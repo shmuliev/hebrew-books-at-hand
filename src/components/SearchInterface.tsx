@@ -118,13 +118,13 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
   return (
     <div className="space-y-6">
       {/* Search Bar Section - This div centers the main search elements */}
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-3xl mx-auto"> {/* Changed from max-w-2xl to max-w-3xl or your preferred width */}
 
-        {/* NEW: Outer flex container for the keyboard toggle and the search input/button group */}
-        {/* items-center vertically aligns them, gap-4 adds space between them */}
-        <div className="flex items-center gap-4">
+        {/* --- DESKTOP VIEW: Keyboard Toggle + Search Input/Button --- */}
+        {/* Hidden on small screens, flex on medium and larger screens */}
+        <div className="hidden md:flex items-center gap-4">
 
-          {/* NEW: Keyboard Toggle Button - now outside the input's direct container */}
+          {/* Keyboard Toggle Button (Desktop Version) */}
           <button
             onClick={toggleKeyboard}
             className="flex-shrink-0 flex items-center gap-1 text-slate-600 hover:text-blue-600 transition-colors px-3 py-2 rounded-lg"
@@ -135,12 +135,10 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
             ) : (
                 <KeyboardIcon className="h-6 w-6" />
             )}
-            {/* NEW: Hebrew character next to the icon */}
             <span className="text-xl font-bold" dir="rtl">ע</span>
           </button>
 
-          {/* This div now wraps ONLY the input, search button, and suggestions dropdown. */}
-          {/* flex-1 makes it take up the remaining space in the outer flex container. */}
+          {/* Input, Search Button, Suggestions (Desktop Version) */}
           <div className="relative flex-1 flex items-stretch gap-4">
             <input
               ref={searchRef}
@@ -160,13 +158,13 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
             <button
               onClick={handleSearch}
               disabled={isSearching}
-              className="bg-blue-600 text-xl text-white px-6 py-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2 border-2 border-blue-600"
+              className="bg-blue-600 text-white px-6 py-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2 border-2 border-blue-600"
             >
               <Search className="h-4 w-4" />
               {isSearching ? 'Searching...' : 'Search'}
             </button>
 
-            {/* Suggestions Dropdown - still positioned relative to its new flex-1 parent */}
+            {/* Suggestions Dropdown (common to both views) */}
             {showSuggestions && suggestions.length > 0 && (
               <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
                 {suggestions.map((suggestion, index) => (
@@ -195,11 +193,91 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
                 ))}
               </div>
             )}
-          </div> {/* End of relative flex-1 flex items-stretch gap-4 div (Input, Button, and Suggestions) */}
+          </div> {/* End of desktop input/button/suggestions div */}
 
-        </div> {/* NEW: End of flex items-center gap-4 div (Outer flex for keyboard toggle + search bar) */}
+        </div> {/* End of desktop flex container */}
 
-        {/* On-screen Hebrew Keyboard */}
+        {/* --- MOBILE VIEW: Search Input/Button (top) then Keyboard Toggle (below) --- */}
+        {/* Flex column on small screens, hidden on medium and larger screens */}
+        <div className="flex flex-col gap-4 md:hidden">
+
+          {/* Input, Search Button, Suggestions (Mobile Version) */}
+          <div className="relative flex items-stretch gap-4">
+            <input
+              ref={searchRef}
+              type="text"
+              value={query}
+              onChange={(e) => {
+                  setQuery(e.target.value);
+                  if (keyboardRef.current) {
+                      keyboardRef.current.setInput(e.target.value);
+                  }
+              }}
+              onKeyPress={handleKeyPress}
+              placeholder="Search in English or Hebrew"
+              className="flex-1 px-4 py-4 text-lg bg-white border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none shadow-sm transition-all"
+              dir="auto"
+            />
+            <button
+              onClick={handleSearch}
+              disabled={isSearching}
+              className="bg-blue-600 text-white px-6 py-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2 border-2 border-blue-600"
+            >
+              <Search className="h-4 w-4" />
+              {isSearching ? 'Searching...' : 'Search'}
+            </button>
+
+            {/* Suggestions Dropdown (common to both views) - remains within this relative div */}
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+                {suggestions.map((suggestion, index) => (
+                  <button
+                    key={index}
+                    onClick={() => selectSuggestion(suggestion)}
+                    className="w-full text-left px-4 py-3 hover:bg-slate-50 border-b border-slate-100 last:border-b-0 flex items-center gap-3"
+                  >
+                    <div className="flex-shrink-0">
+                      {suggestion.type === 'title' && <BookOpen className="h-4 w-4 text-blue-600" />}
+                      {suggestion.type === 'author' && <User className="h-4 w-4 text-green-600" />}
+                      {suggestion.type === 'place' && <MapPin className="h-4 w-4 text-purple-600" />}
+                      {suggestion.type === 'year' && <Calendar className="h-4 w-4 text-orange-600" />}
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-medium text-slate-900" dir="auto">
+                        {suggestion.text}
+                      </div>
+                      {suggestion.textEn && (
+                        <div className="text-sm text-slate-500">
+                          {suggestion.textEn}
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div> {/* End of mobile input/button/suggestions div */}
+
+          {/* Keyboard Toggle Button (Mobile Version) - placed below the input row */}
+          <div className="flex justify-center"> {/* Centers the button horizontally */}
+            <button
+              onClick={toggleKeyboard}
+              className="flex items-center gap-1 text-slate-600 hover:text-blue-600 transition-colors px-3 py-2 rounded-lg"
+              title={isKeyboardOpen ? "Close Keyboard" : "Open On-screen Keyboard"}
+            >
+              {isKeyboardOpen ? (
+                  <XCircle className="h-6 w-6" />
+              ) : (
+                  <KeyboardIcon className="h-6 w-6" />
+              )}
+              <span className="text-xl font-bold" dir="rtl">ע</span>
+            </button>
+          </div>
+
+        </div> {/* End of mobile flex column container */}
+
+
+        {/* On-screen Hebrew Keyboard (this remains common, visibility controlled by isKeyboardOpen) */}
         {isKeyboardOpen && (
             <div className="mt-4">
                 <Keyboard
@@ -223,7 +301,7 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
           </p>
         </div>
 
-      </div> {/* End of max-w-2xl mx-auto div (Search Bar Section) */}
+      </div> {/* End of max-w-3xl mx-auto div (Search Bar Section) */}
 
       {/* Advanced Filters */}
       <div className="text-center">
