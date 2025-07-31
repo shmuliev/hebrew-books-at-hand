@@ -1,5 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Search, Filter, Calendar, MapPin, User, BookOpen, Clock } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Search, Filter, Calendar, MapPin, User, BookOpen, Clock, Keyboard as KeyboardIcon, XCircle } from 'lucide-react'; // Added KeyboardIcon and XCircle for the toggle button
+import Keyboard from "react-simple-keyboard"; // Import the Keyboard component
+import "react-simple-keyboard/build/css/index.css"; // Import default styles for the keyboard
 
 interface SearchInterfaceProps {
   onSearch: (query: string, filters: any) => void;
@@ -25,7 +27,9 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
   const [showFilters, setShowFilters] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false); // NEW: State for keyboard toggle
   const searchRef = useRef<HTMLInputElement>(null);
+  const keyboardRef = useRef<any>(null); // NEW: Ref for the simple-keyboard instance
 
   const mockSuggestions = [
     { type: 'title', text: 'משנה תורה', textEn: 'Mishneh Torah' },
@@ -52,6 +56,7 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
     if (query.trim()) {
       onSearch(query, filters);
       setShowSuggestions(false);
+      setIsKeyboardOpen(false); // Close keyboard on search
     }
   };
 
@@ -64,7 +69,59 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
   const selectSuggestion = (suggestion: any) => {
     setQuery(suggestion.text);
     setShowSuggestions(false);
+    setIsKeyboardOpen(false); // Close keyboard on suggestion select
     setTimeout(() => handleSearch(), 100);
+  };
+
+  // NEW: Keyboard specific functions
+  const onKeyboardChange = useCallback((input: string) => {
+    setQuery(input);
+  }, []);
+
+  const onKeyboardKeyPress = useCallback((button: string) => {
+    // If you want to handle the shift and caps lock buttons
+    if (button === "{shift}" || button === "{lock}") {
+      if (keyboardRef.current) {
+        // Toggle between 'default' and 'shift' layouts
+        keyboardRef.current.setOptions({
+          layoutName: keyboardRef.current.options.layoutName === "default" ? "shift" : "default"
+        });
+      }
+    }
+    // Handle Enter key press from virtual keyboard
+    if (button === "{enter}") {
+        handleSearch();
+    }
+    // Handle Backspace
+    if (button === "{bksp}") {
+      setQuery(prevQuery => prevQuery.slice(0, -1)); // Manually handle backspace for direct query manipulation
+    }
+  }, [handleSearch]);
+
+  const toggleKeyboard = () => {
+    setIsKeyboardOpen(prev => !prev);
+    // Focus the search input when opening the keyboard
+    if (!isKeyboardOpen && searchRef.current) {
+        searchRef.current.focus();
+    }
+  };
+
+  // NEW: Define Hebrew layout for simple-keyboard
+  // Adjust this layout based on specific Hebrew keyboard conventions if needed.
+  // {bksp} is backspace, {enter} is enter, {space} is space.
+  const hebrewLayout = {
+    'default': [
+      "ק ר א ט ו ן ם פ",
+      "ש ד ג כ ע י ח ל ך ף",
+      "ז ס ב ה נ מ צ ת ץ , .",
+      "{shift} / {space} {bksp} {enter}" // Added {enter} to this row
+    ],
+    'shift': [ // Example 'shift' layout for Hebrew keyboard - could be symbols or secondary Hebrew characters
+      "! @ # $ % ^ & * ( ) _ +",
+      "~ ` { } | \\ [ ] ; : \" '",
+      "< > ? / - = , .",
+      "{shift} / {space} {bksp} {enter}"
+    ]
   };
 
   return (
@@ -73,30 +130,52 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
       <div className="max-w-2xl mx-auto">
 
         {/* This inner div is the relative container for the absolutely positioned suggestions dropdown. */}
-        {/* It contains the input and button, arranged using flex and items-stretch for equal height. */}
+        {/* It contains the input and button. */}
         <div className="relative flex items-stretch gap-4">
           <input
             ref={searchRef}
             type="text"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+                setQuery(e.target.value);
+                // NEW: Also update keyboard's internal input if it's open, when typing directly
+                if (keyboardRef.current) {
+                    keyboardRef.current.setInput(e.target.value);
+                }
+            }}
             onKeyPress={handleKeyPress}
             placeholder="Search in English or Hebrew"
-            // `flex-1` makes it grow to fill available space, `px-4 py-4` define padding
             className="flex-1 px-4 py-4 text-lg bg-white border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none shadow-sm transition-all"
             dir="auto"
           />
           <button
             onClick={handleSearch}
             disabled={isSearching}
-            // Removed absolute positioning, `py-4` and `border-2` ensure consistent height with input due to `items-stretch` on parent
-            className="bg-blue-600 text-lg text-white px-6 py-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2 border-2 border-blue-600"
+            className="bg-blue-600 text-white px-6 py-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2 border-2 border-blue-600"
           >
             <Search className="h-4 w-4" />
             {isSearching ? 'Searching...' : 'Search'}
           </button>
 
-          {/* Suggestions Dropdown - now positioned relative to the flex container (input/button row) */}
+          {/* NEW: Keyboard Toggle Button */}
+          {/* Positioned inside the relative search bar container */}
+          <button
+            onClick={toggleKeyboard}
+            // Absolute positioning, adjust right-2 to control distance from search button
+            className="text-slate-600 hover:text-blue-600 transition-colors flex items-center p-2 rounded-full absolute right-2 top-1/2 transform -translate-y-1/2"
+            title={isKeyboardOpen ? "Close Keyboard" : "Open On-screen Keyboard"}
+            // To prevent the button from pushing the search button
+            style={{ right: '80px' }} // Adjust this value as needed to clear the search button
+          >
+            {isKeyboardOpen ? (
+                <XCircle className="h-6 w-6" />
+            ) : (
+                <KeyboardIcon className="h-6 w-6" />
+            )}
+          </button>
+
+
+          {/* Suggestions Dropdown - positioned relative to the flex container (input/button row) */}
           {showSuggestions && suggestions.length > 0 && (
             <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
               {suggestions.map((suggestion, index) => (
@@ -127,8 +206,23 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
           )}
         </div> {/* End of relative flex items-stretch gap-4 div (Input, Button, and Suggestions) */}
 
+        {/* NEW: On-screen Hebrew Keyboard */}
+        {isKeyboardOpen && (
+            <div className="mt-4"> {/* Add margin top for spacing */}
+                <Keyboard
+                    keyboardRef={r => (keyboardRef.current = r)} // Attach the ref
+                    inputName={"default"} // Associates with the primary input
+                    layout={hebrewLayout} // Your custom Hebrew layout
+                    onChange={onKeyboardChange} // Updates `query` state
+                    onKeyPress={onKeyboardKeyPress} // Handles special key presses
+                    syncInstanceInputs={true} // Keeps input synced when physical typing
+                    theme={"hg-theme-default hg-layout-numeric"} // Default theme, apply your own styles or custom theme
+                />
+            </div>
+        )}
+
         {/* Search Tip Text - placed below the input/button/suggestions container, using margin-top for spacing */}
-        <div className="text-center px-4 mt-4">
+        <div className="text-center px-4 mt-8"> {/* Adjusted mt-8 for space after keyboard/search bar */}
           <p className="text-sm text-slate-600 leading-relaxed">
             <span className="block sm:inline">Search titles, authors, places, and publication years</span>
             <span className="hidden sm:inline mx-2">•</span>
