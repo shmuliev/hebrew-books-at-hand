@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Search, Filter, Calendar, MapPin, User, BookOpen, Clock, Keyboard as KeyboardIcon, XCircle } from 'lucide-react';
+import { Search, Filter, Calendar, MapPin, User, BookOpen, Clock, Keyboard as KeyboardIcon, XCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import Keyboard from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
 
@@ -31,6 +31,31 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
   const searchRef = useRef<HTMLInputElement>(null);
   const keyboardRef = useRef<any>(null);
 
+  // --- Pagination State ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const resultsPerPage = 10; // You can adjust this number
+
+  const totalPages = Math.ceil(searchResults.length / resultsPerPage);
+  const indexOfLastResult = currentPage * resultsPerPage;
+  const indexOfFirstResult = indexOfLastResult - resultsPerPage;
+  const currentResults = searchResults.slice(indexOfFirstResult, indexOfLastResult);
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(prev => prev + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top on page change
+    }
+  };
+
+  const goToPrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top on page change
+    }
+  };
+  // --- End Pagination State ---
+
+
   const mockSuggestions = [
     { type: 'title', text: 'משנה תורה', textEn: 'Mishneh Torah' },
     { type: 'author', text: 'רמב"ם', textEn: 'Maimonides' },
@@ -52,11 +77,18 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
     }
   }, [query]);
 
+  // Reset page to 1 when search results change (e.g., new search query)
+  useEffect(() => {
+      setCurrentPage(1);
+  }, [searchResults]);
+
+
   const handleSearch = useCallback(() => {
     if (query.trim()) {
       onSearch(query, filters);
       setShowSuggestions(false);
       setIsKeyboardOpen(false);
+      setCurrentPage(1); // Reset to first page on new search
     }
   }, [query, filters, onSearch]);
 
@@ -166,7 +198,7 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
 
             {/* Suggestions Dropdown (common to both views) */}
             {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto p-2"> {/* Added p-2 */}
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto p-2">
                 {suggestions.map((suggestion, index) => (
                   <button
                     key={index}
@@ -219,7 +251,7 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
             />
             {/* Suggestions Dropdown (common to both views) - remains within this relative div */}
             {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto px-4 py-2"> {/* Added px-4 py-2 */}
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto px-4 py-2">
                 {suggestions.map((suggestion, index) => (
                   <button
                     key={index}
@@ -382,10 +414,35 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
             <h3 className="text-xl font-semibold text-slate-900">
               Search Results ({searchResults.length})
             </h3>
+            {/* TOP PAGINATION CONTROLS */}
+            {totalPages > 1 && (
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={goToPrevPage}
+                        disabled={currentPage === 1}
+                        className="p-2 rounded-full hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        aria-label="Previous results page"
+                    >
+                        <ChevronLeft className="h-5 w-5 text-slate-600" />
+                    </button>
+                    <span className="text-sm text-slate-600">
+                        Page {currentPage} of {totalPages}
+                    </span>
+                    <button
+                        onClick={goToNextPage}
+                        disabled={currentPage === totalPages}
+                        className="p-2 rounded-full hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        aria-label="Next results page"
+                    >
+                        <ChevronRight className="h-5 w-5 text-slate-600" />
+                    </button>
+                </div>
+            )}
           </div>
 
           <div className="grid gap-4">
-            {searchResults.map((book) => (
+            {/* Iterate over currentResults instead of all searchResults */}
+            {currentResults.map((book) => (
               <div
                 key={book.id}
                 onClick={() => onBookSelect(book)}
@@ -403,7 +460,8 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
                             {book.titleEnglish}
                           </p>
                         )}
-                        <div className="flex items-center gap-4 mt-3 text-sm text-slate-500">
+                        {/* Adjusted for mobile stacking */}
+                        <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 mt-3 text-sm text-slate-500">
                           <span className="flex items-center gap-1">
                             <User className="h-4 w-4" />
                             <span dir="auto">{book.authorHebrew}</span>
@@ -433,6 +491,29 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
               </div>
             ))}
           </div>
+
+          {/* BOTTOM PAGINATION CONTROLS */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-4 mt-6">
+              <button
+                onClick={goToPrevPage}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+              >
+                <ChevronLeft className="h-4 w-4" /> Previous
+              </button>
+              <span className="text-lg text-slate-600 font-medium">
+                {currentPage} / {totalPages}
+              </span>
+              <button
+                onClick={goToNextPage}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+              >
+                Next <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          )}
         </div>
       )}
 
