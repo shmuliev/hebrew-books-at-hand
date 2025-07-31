@@ -251,4 +251,200 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
           </div> {/* End of mobile input field div */}
 
           {/* NEW: Keyboard Toggle Button + Search Button (Mobile Version) - on next line */}
-          {/* This div now ensures the toggle is on
+          {/* This div now ensures the toggle is on the left, and the search button expands to the right */}
+          <div className="flex items-center gap-4"> {/* Removed justify-center here */}
+            {/* Keyboard Toggle Button */}
+            <button
+              onClick={toggleKeyboard}
+              className="flex-shrink-0 flex items-center gap-1 text-slate-600 hover:text-blue-600 transition-colors px-3 py-2 rounded-lg" // Added flex-shrink-0
+              title={isKeyboardOpen ? "Close Keyboard" : "Open On-screen Keyboard"}
+            >
+              {isKeyboardOpen ? (
+                  <XCircle className="h-6 w-6" />
+              ) : (
+                  <KeyboardIcon className="h-6 w-6" />
+              )}
+              <span className="text-xl font-bold" dir="rtl">ע</span>
+            </button>
+
+            {/* Search Button (Mobile Version) - Now fills remaining space */}
+            <button
+              onClick={handleSearch}
+              disabled={isSearching}
+              className="flex-1 bg-blue-600 text-white px-6 py-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2 border-2 border-blue-600" // Added flex-1 and justify-center
+            >
+              <Search className="h-4 w-4" />
+              {isSearching ? 'Searching...' : 'Search'}
+            </button>
+          </div>
+
+        </div> {/* End of mobile flex column container */}
+
+
+        {/* On-screen Hebrew Keyboard (this remains common, visibility controlled by isKeyboardOpen) */}
+        {isKeyboardOpen && (
+            <div className="mt-4">
+                <Keyboard
+                    keyboardRef={r => (keyboardRef.current = r)}
+                    inputName={"default"}
+                    layout={hebrewLayout}
+                    onChange={onKeyboardChange}
+                    onKeyPress={onKeyboardKeyPress}
+                    syncInstanceInputs={true}
+                    theme={"hg-theme-default hg-layout-numeric"}
+                />
+            </div>
+        )}
+
+        {/* Search Tip Text */}
+        <div className="text-center px-4 mt-8">
+          <p className="text-sm text-slate-600 leading-relaxed">
+            <span className="block sm:inline">Search titles, authors, places, and publication years</span>
+            <span className="hidden sm:inline mx-2">•</span>
+            <span className="block sm:inline" dir="rtl">חיפוש כותרים, מחברים, מקומות ושנות הדפסה</span>
+          </p>
+        </div>
+
+      </div> {/* End of max-w-3xl mx-auto div (Search Bar Section) */}
+
+      {/* Advanced Filters */}
+      <div className="text-center">
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="text-blue-600 hover:text-blue-700 font-medium"
+        >
+          {showFilters ? 'Hide Advanced Search' : 'Show Advanced Search'}
+        </button>
+      </div>
+
+      {showFilters && (
+        <div className="bg-white rounded-lg border border-slate-200 p-6 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Language</label>
+              <select
+                value={filters.language}
+                onChange={(e) => setFilters({...filters, language: e.target.value})}
+                className="w-full p-2 border border-slate-300 rounded-md focus:border-blue-500 focus:outline-none"
+              >
+                <option value="">All Languages</option>
+                <option value="hebrew">Hebrew</option>
+                <option value="english">English</option>
+                <option value="aramaic">Aramaic</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Year From</label>
+              <input
+                type="number"
+                value={filters.yearFrom}
+                onChange={(e) => setFilters({...filters, yearFrom: e.target.value})}
+                placeholder="1450"
+                className="w-full p-2 border border-slate-300 rounded-md focus:border-blue-500 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Year To</label>
+              <input
+                type="number"
+                value={filters.yearTo}
+                onChange={(e) => setFilters({...filters, yearTo: e.target.value})}
+                placeholder="1800"
+                className="w-full p-2 border border-slate-300 rounded-md focus:border-blue-500 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Place Printed</label>
+              <input
+                type="text"
+                value={filters.place}
+                onChange={(e) => setFilters({...filters, place: e.target.value})}
+                placeholder="Venice, Amsterdam..."
+                className="w-full p-2 border border-slate-300 rounded-md focus:border-blue-500 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Author</label>
+              <input
+                type="text"
+                value={filters.author}
+                onChange={(e) => setFilters({...filters, author: e.target.value})}
+                placeholder="רמב״ם, Maimonides..."
+                className="w-full p-2 border border-slate-300 rounded-md focus:border-blue-500 focus:outline-none"
+                dir="auto"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Search Results */}
+      {searchResults.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-semibold text-slate-900">
+              Search Results ({searchResults.length})
+            </h3>
+          </div>
+
+          <div className="grid gap-4">
+            {searchResults.map((book) => (
+              <div
+                key={book.id}
+                onClick={() => onBookSelect(book)}
+                className="bg-white rounded-lg border border-slate-200 p-6 hover:shadow-md hover:border-blue-300 transition-all cursor-pointer group"
+              >
+                <div className="flex justify-between items-start gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-start gap-4">
+                      <div className="flex-1">
+                        <h4 className="text-lg font-semibold text-slate-900 group-hover:text-blue-600 transition-colors" dir="auto">
+                          {book.titleHebrew}
+                        </h4>
+                        {book.titleEnglish && (
+                          <p className="text-slate-600 mt-1">
+                            {book.titleEnglish}
+                          </p>
+                        )}
+                        <div className="flex items-center gap-4 mt-3 text-sm text-slate-500">
+                          <span className="flex items-center gap-1">
+                            <User className="h-4 w-4" />
+                            <span dir="auto">{book.authorHebrew}</span>
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Calendar className="h-4 w-4" />
+                            {book.yearPrinted}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <MapPin className="h-4 w-4" />
+                            {book.placePrinted}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <BookOpen className="h-4 w-4" />
+                            {book.pages} pages
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                          Read Book
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {isSearching && (
+        <div className="text-center py-8">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <p className="mt-2 text-slate-600">Searching through 60,000+ books...</p>
+        </div>
+      )}
+    </div>
+  );
+};
