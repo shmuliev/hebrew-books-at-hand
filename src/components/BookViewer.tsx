@@ -218,24 +218,24 @@ export const BookViewer: React.FC<BookViewerProps> = ({ book, onClose }) => {
           style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'center top' }}
         >
           {/* --- IN-PAGE NAVIGATION ARROWS --- */}
-          {/* Left Arrow */}
+          {/* Left Arrow (Previous page in LTR, Next page in RTL) */}
           <button
-            onClick={prevPage}
-            disabled={currentPage === 1}
+            onClick={isRTL ? nextPage : prevPage} // Fixed: If RTL, left moves to next page; otherwise, previous
+            disabled={currentPage === (isRTL ? book.pages : 1)} // Fixed: Disable if at last page in RTL, or first in LTR
             className="absolute left-2 top-1/2 transform -translate-y-1/2 p-3 bg-white/70 backdrop-blur-sm rounded-full shadow-lg hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed transition-all z-10"
             aria-label={isRTL ? "Next Page" : "Previous Page"}
           >
-            {isRTL ? <ArrowRight className="h-6 w-6 text-slate-700" /> : <ArrowLeft className="h-6 w-6 text-slate-700" />}
+            {isRTL ? <ArrowLeft className="h-6 w-6 text-slate-700" /> : <ArrowLeft className="h-6 w-6 text-slate-700" />}
           </button>
 
-          {/* Right Arrow */}
+          {/* Right Arrow (Next page in LTR, Previous page in RTL) */}
           <button
-            onClick={nextPage}
-            disabled={currentPage === book.pages}
+            onClick={isRTL ? prevPage : nextPage} // Fixed: If RTL, right moves to previous page; otherwise, next
+            disabled={currentPage === (isRTL ? 1 : book.pages)} // Fixed: Disable if at first page in RTL, or last in LTR
             className="absolute right-2 top-1/2 transform -translate-y-1/2 p-3 bg-white/70 backdrop-blur-sm rounded-full shadow-lg hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed transition-all z-10"
             aria-label={isRTL ? "Previous Page" : "Next Page"}
           >
-            {isRTL ? <ArrowLeft className="h-6 w-6 text-slate-700" /> : <ArrowRight className="h-6 w-6 text-slate-700" />}
+            {isRTL ? <ArrowRight className="h-6 w-6 text-slate-700" /> : <ArrowRight className="h-6 w-6 text-slate-700" />}
           </button>
           {/* --- END IN-PAGE NAVIGATION ARROWS --- */}
 
