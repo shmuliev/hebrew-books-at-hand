@@ -71,7 +71,7 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
   return (
     <div className="space-y-6">
       {/* Search Bar */}
-      <div className="relative max-w-2xl mx-auto">
+      <div className="flex item-center gap-4">
         <div className="space-y-4">
           <div className="relative">
             <input
@@ -84,15 +84,16 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
               className="w-full px-4 py-4 pr-32 text-lg bg-white border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none shadow-sm transition-all"
               dir="auto"
             />
-            <button
+          <button
               onClick={handleSearch}
               disabled={isSearching}
               className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2"
             >
               <Search className="h-4 w-4" />
               {isSearching ? 'Searching...' : 'Search'}
-            </button>
+            </button>  
           </div>
+          
             
   
  
