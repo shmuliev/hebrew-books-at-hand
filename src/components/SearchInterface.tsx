@@ -90,7 +90,7 @@ export const SearchInterface: React.FC<SearchInterfaceProps> = ({
             onClick={handleSearch}
             disabled={isSearching}
             // Removed absolute positioning, `py-4` and `border-2` ensure consistent height with input due to `items-stretch` on parent
-            className="bg-blue-600 text-white px-6 py-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2 border-2 border-blue-600"
+            className="bg-blue-600 text-lg text-white px-6 py-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2 border-2 border-blue-600"
           >
             <Search className="h-4 w-4" />
             {isSearching ? 'Searching...' : 'Search'}
