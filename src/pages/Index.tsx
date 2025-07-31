@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Search, Book, Calendar, MapPin, User, Heart, Menu, X } from 'lucide-react';
 import { SearchInterface } from '../components/SearchInterface';
@@ -122,19 +121,22 @@ const Index = () => {
                     { name: 'Shalos Utshuvos', nameHebrew: 'שאלות ותשובת ', count: '1,892', icon: Book },
                     { name: 'History', nameHebrew: 'היסטוריה', count: '3,456', icon: Book },
                     { name: 'Kabbalah', nameHebrew: 'קבלה', count: '967', icon: Book }
-                    
                   ].map((category, index) => (
                     <div key={index} className="bg-white rounded-lg shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow cursor-pointer group">
                       <div className="flex items-center justify-between mb-3">
                         <category.icon className="h-6 w-6 text-blue-600" />
                         <span className="text-sm text-slate-500">{category.count} books</span>
                       </div>
-                      <h4 className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
-                        {category.name}
-                      </h4>
-                      <p className="text-slate-600 text-right mt-1" dir="rtl">
+                      {/* MODIFIED SECTION: Combined Hebrew and English category names */}
+                      <h4 className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors leading-tight" dir="auto">
                         {category.nameHebrew}
-                      </p>
+                        {category.name && ( // Only show English if it exists
+                          <span className="text-sm font-normal text-slate-600 ml-1">
+                            ({category.name})
+                          </span>
+                        )}
+                      </h4>
+                      {/* END MODIFIED SECTION */}
                     </div>
                   ))}
                 </div>
